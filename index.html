@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotifast visual review: local files</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 15px/1.55 system-ui, sans-serif; background: #14161a; color: #e8eaed; }
+  header, main, footer { max-width: 1080px; margin: 0 auto; padding: 20px 24px; }
+  header { border-bottom: 1px solid #2b2f36; }
+  h1 { font-size: 21px; margin: 0 0 6px; }
+  .meta { color: #9aa0a6; font-size: 13.5px; }
+  .meta code { color: #c6f0ad; background: none; }
+  .controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin: 18px 0 6px; }
+  .group { display: flex; gap: 6px; align-items: center; }
+  .group .label { color: #9aa0a6; font-size: 12.5px; margin-right: 2px; }
+  button, select {
+    font: inherit; font-size: 13.5px; color: #e8eaed; background: #1f2329;
+    border: 1px solid #343a42; border-radius: 8px; padding: 5px 12px; cursor: pointer;
+  }
+  button[aria-pressed="true"] { background: #24405e; border-color: #3d6db3; }
+  button:disabled { opacity: .4; cursor: default; }
+  figure { margin: 14px 0 0; }
+  figure img { width: 100%; height: auto; display: block; border: 1px solid #2b2f36; border-radius: 10px; }
+  figcaption { color: #9aa0a6; font-size: 13px; margin-top: 8px; }
+  .sub { color: #9aa0a6; font-size: 13px; margin: 10px 0 2px; }
+  .note { background: #1b1f25; border: 1px solid #2b2f36; border-radius: 10px; padding: 12px 16px; margin: 14px 0; font-size: 14px; }
+  .note h2 { font-size: 15px; margin: 0 0 6px; }
+  .note ul { margin: 0; padding-left: 20px; }
+  .links { font-size: 13.5px; }
+  .links a { color: #8ab4f8; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Spotifast visual review: local files</h1>
+  <p class="meta">
+    Change: play local MP3, M4A and FLAC files chosen in Settings.
+    Baseline: <code>main</code> at <code>dd2d5e3</code>, candidate: this branch (8 commits, ends at <code>8b4678e</code>).
+    Captures produced by demo mode (<code>--demo-shot</code>) on Windows 11 x86_64;
+    window sizes 1280x800 (normal), 900x700 (narrow) and 1280x1440 with the same scripted
+    scroll for the Settings view. The same demo data drives both builds.
+    Linux and macOS were not captured here; CI builds and tests them.
+  </p>
+</header>
+<main>
+  <div class="controls">
+    <div class="group">
+      <button id="prev" title="Previous review">&#8592; Prev</button>
+      <select id="review" aria-label="Review"></select>
+      <button id="next" title="Next review">Next &#8594;</button>
+    </div>
+    <div class="group" id="side-group">
+      <span class="label">Side</span>
+      <button id="side-before">Before</button>
+      <button id="side-after">After</button>
+    </div>
+    <div class="group" id="theme-group">
+      <span class="label">Theme</span>
+      <button data-theme="dark">Dark</button>
+      <button data-theme="light">Light</button>
+    </div>
+    <div class="group" id="size-group">
+      <span class="label">Window</span>
+      <button data-size="normal">Normal</button>
+      <button data-size="narrow">Narrow</button>
+    </div>
+  </div>
+
+  <p class="note" id="review-note"></p>
+
+  <figure id="main-fig">
+    <img id="main-img" alt="capture" loading="lazy">
+    <figcaption id="main-cap"></figcaption>
+  </figure>
+
+  <div id="extras"></div>
+
+  <div class="note">
+    <h2>What the change looks like</h2>
+    <ul>
+      <li>Settings grows a third section, Local files, between Playback and Appearance:
+        an on/off switch, an Add a source button, and the chosen folders, each removable.
+        Off, the section is just the switch.</li>
+      <li>The library sidebar gains a Local files entry with the song count, and the entry
+        opens a page of the scanned files with title, artist, album and duration.</li>
+      <li>A playing local file shows its name and artist in the player bar and its embedded
+        cover art; a file with no embedded picture shows the placeholder.</li>
+      <li>Demo tracks deliberately carry no embedded art, so demo rows show the placeholder;
+        real files with embedded art show it (covered by tests and a real-library scan).</li>
+    </ul>
+  </div>
+
+  <div class="note">
+    <h2>Checks</h2>
+    <ul>
+      <li>Run locally on Windows x86_64, all green: <code>cargo fmt --all --check</code>;
+        <code>cargo clippy --locked --all-targets -- -D warnings</code> and the same with
+        <code>--all-features</code>; <code>cargo test --locked --all-targets</code> and the
+        same with <code>--all-features</code>; <code>cargo test --locked --all-features --doc</code>;
+        <code>RUSTDOCFLAGS='-D warnings' cargo doc --locked --all-features --no-deps</code>.
+        Translation catalogs were regenerated with <code>.github/scripts/update-translations.sh</code>.</li>
+      <li>Also run locally: a scan of a real library of 1452 files, matching the count
+        Spotify Desktop reports for the same folders; 1450 files show their embedded cover
+        (two MP3s carry 9-11 MB PNG art over the 8 MB cap and use the placeholder).</li>
+      <li>Left to CI: the Linux and macOS suites, the docs (Jekyll) build, the Nix build,
+        <code>packaging/test-launchers.py</code> and
+        <code>update-translations.sh --check</code>.</li>
+    </ul>
+  </div>
+
+  <p class="links" id="links"></p>
+</main>
+<footer class="meta">One change per review, only the selected review loads.</footer>
+<script>
+const BASE = "https://raw.githubusercontent.com/notdezzi/spotifast/local-files-visual/shots/";
+const reviews = [
+  {
+    id: "settings", name: "1. Settings: new Local files section",
+    sides: ["before", "after"],
+    sizes: [{ id: "normal", label: "Normal", themes: ["dark", "light"] }],
+    img: (side, theme, size) => `${side}-settings-scrolled-${theme}.png`,
+    caption: (side, theme, size) => `${side === "before" ? "Baseline (main dd2d5e3)" : "Candidate (this branch)"}, ${theme} theme, 1280x1440, same scripted scroll.`,
+    note: "Same window size and the same scripted scroll on both builds. The candidate adds a Local files section between Playback and Appearance: an on/off switch, Add a source, and each chosen folder with a remove button."
+  },
+  {
+    id: "library", name: "2. Library: Local files entry",
+    sides: ["before", "after"],
+    sizes: [
+      { id: "normal", label: "Normal", themes: ["dark", "light"] },
+      { id: "narrow", label: "Narrow", themes: ["dark"] }
+    ],
+    img: (side, theme, size) => size === "narrow" ? `${side}-sidebar-narrow.png` : `${side}-sidebar-${theme}.png`,
+    caption: (side, theme, size) => `${side === "before" ? "Baseline (main dd2d5e3)" : "Candidate (this branch)"}, ${theme} theme, ${size === "narrow" ? "900x700 narrow" : "1280x800"}.`,
+    note: "The candidate adds a Local files entry with the song count under Liked Songs. Narrow was captured in dark only."
+  },
+  {
+    id: "page", name: "3. Local files page: rows, empty, scanning",
+    sides: ["after"],
+    sizes: [
+      { id: "normal", label: "Normal", themes: ["dark", "light"] },
+      { id: "narrow", label: "Narrow", themes: ["dark"] }
+    ],
+    img: (side, theme, size) => size === "narrow" ? `after-local-rows-narrow.png` : `after-local-rows-${theme}.png`,
+    caption: (side, theme, size) => `Candidate (this branch), ${theme} theme, ${size === "narrow" ? "900x700 narrow" : "1280x800"}.`,
+    note: "The page is new, so there is no before: a baseline build has no entry to open. Rows show title, artist, album and duration; the demo tracks carry no embedded picture, so rows show the placeholder on purpose. Empty and scanning states are captured in dark below. Narrow was captured in dark only.",
+    extras: [
+      { src: "after-local-empty-dark.png", cap: "Candidate, dark, 1280x800: no sources yet, the page says so and points at Settings." },
+      { src: "after-local-scanning-dark.png", cap: "Candidate, dark, 1280x800: a scan in progress." }
+    ]
+  }
+];
+const state = { review: reviews[0], side: "after", theme: "dark", size: "normal" };
+
+const $ = id => document.getElementById(id);
+const sizeDef = () => state.review.sizes.find(s => s.id === state.size) || state.review.sizes[0];
+
+function render() {
+  const r = state.review, sz = sizeDef();
+  if (!sz.themes.includes(state.theme)) state.theme = sz.themes[0];
+  if (!r.sides.includes(state.side)) state.side = r.sides[0];
+
+  const sel = $("review");
+  sel.innerHTML = "";
+  reviews.forEach(rv => {
+    const o = document.createElement("option");
+    o.value = rv.id; o.textContent = rv.name;
+    if (rv === r) o.selected = true;
+    sel.append(o);
+  });
+
+  $("side-before").disabled = !r.sides.includes("before");
+  $("side-after").disabled = !r.sides.includes("after");
+  $("side-before").setAttribute("aria-pressed", state.side === "before");
+  $("side-after").setAttribute("aria-pressed", state.side === "after");
+
+  document.querySelectorAll("#theme-group [data-theme]").forEach(b => {
+    b.disabled = !sz.themes.includes(b.dataset.theme);
+    b.setAttribute("aria-pressed", b.dataset.theme === state.theme);
+  });
+  document.querySelectorAll("#size-group [data-size]").forEach(b => {
+    b.disabled = !r.sizes.some(s => s.id === b.dataset.size);
+    b.setAttribute("aria-pressed", b.dataset.size === state.size);
+  });
+
+  $("review-note").textContent = r.note;
+  $("main-img").src = BASE + r.img(state.side, state.theme, state.size);
+  $("main-cap").textContent = r.caption(state.side, state.theme, state.size);
+
+  const extras = $("extras");
+  extras.innerHTML = "";
+  (r.extras || []).forEach(e => {
+    const fig = document.createElement("figure");
+    const img = document.createElement("img");
+    img.src = BASE + e.src; img.loading = "lazy"; img.alt = "capture";
+    const cap = document.createElement("figcaption");
+    cap.textContent = e.cap;
+    fig.append(img, cap);
+    extras.append(fig);
+  });
+
+  $("links").innerHTML = "Direct links: " + reviews.map(rv =>
+    `<a href="#${rv.id}">${rv.name.replace(/^\d+\.\s/, "")}</a>`).join(" · ");
+
+  $("prev").disabled = reviews.indexOf(r) === 0;
+  $("next").disabled = reviews.indexOf(r) === reviews.length - 1;
+  location.hash = r.id;
+}
+
+$("prev").onclick = () => { const i = reviews.indexOf(state.review); if (i > 0) { state.review = reviews[i - 1]; state.size = "normal"; render(); } };
+$("next").onclick = () => { const i = reviews.indexOf(state.review); if (i < reviews.length - 1) { state.review = reviews[i + 1]; state.size = "normal"; render(); } };
+$("review").onchange = e => { state.review = reviews.find(r => r.id === e.target.value); state.size = "normal"; render(); };
+$("side-before").onclick = () => { state.side = "before"; render(); };
+$("side-after").onclick = () => { state.side = "after"; render(); };
+document.querySelectorAll("#theme-group [data-theme]").forEach(b => b.onclick = () => { state.theme = b.dataset.theme; render(); });
+document.querySelectorAll("#size-group [data-size]").forEach(b => b.onclick = () => { state.size = b.dataset.size; render(); });
+window.addEventListener("hashchange", () => {
+  const rv = reviews.find(r => r.id === location.hash.slice(1));
+  if (rv && rv !== state.review) { state.review = rv; state.size = "normal"; render(); }
+});
+render();
+</script>
+</body>
+</html>
