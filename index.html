@@ -38,7 +38,7 @@
   <h1>Spotifast PR #845: Play local files from chosen folders</h1>
   <p class="meta">
     Change: play local MP3, M4A and FLAC files chosen in Settings.
-    Baseline: <code>main</code> at <code>dd2d5e3</code>, candidate: this branch (8 commits, ends at <code>8b4678e</code>).
+    Baseline: <code>main</code> at <code>fc60826</code>, candidate: this branch (10 commits, ends at <code>960e305</code>).
     Captures produced by demo mode (<code>--demo-shot</code>) on Windows 11 x86_64;
     window sizes 1280x800 (normal), 900x700 (narrow) and 1280x1440 with the same scripted
     scroll for the Settings view. The same demo data drives both builds.
@@ -122,7 +122,7 @@ const reviews = [
     sides: ["before", "after"],
     sizes: [{ id: "normal", label: "Normal", themes: ["dark", "light"] }],
     img: (side, theme, size) => `${side}-settings-scrolled-${theme}.png`,
-    caption: (side, theme, size) => `${side === "before" ? "Baseline (main dd2d5e3)" : "Candidate (this branch)"}, ${theme} theme, 1280x1440, same scripted scroll.`,
+    caption: (side, theme, size) => `${side === "before" ? "Baseline (main fc60826)" : "Candidate (this branch)"}, ${theme} theme, 1280x1440, same scripted scroll.`,
     note: "Same window size and the same scripted scroll on both builds. The candidate adds a Local files section between Playback and Appearance: an on/off switch, Add a source, and each chosen folder with a remove button."
   },
   {
@@ -133,7 +133,7 @@ const reviews = [
       { id: "narrow", label: "Narrow", themes: ["dark"] }
     ],
     img: (side, theme, size) => size === "narrow" ? `${side}-sidebar-narrow.png` : `${side}-sidebar-${theme}.png`,
-    caption: (side, theme, size) => `${side === "before" ? "Baseline (main dd2d5e3)" : "Candidate (this branch)"}, ${theme} theme, ${size === "narrow" ? "900x700 narrow" : "1280x800"}.`,
+    caption: (side, theme, size) => `${side === "before" ? "Baseline (main fc60826)" : "Candidate (this branch)"}, ${theme} theme, ${size === "narrow" ? "900x700 narrow" : "1280x800"}.`,
     note: "The candidate adds a Local files entry with the song count under Liked Songs. Narrow was captured in dark only."
   },
   {
